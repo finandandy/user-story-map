@@ -20,3 +20,6 @@ Thumbs.db
 
 # Obsidian plugin local-dev artifacts
 data.json
+
+# Local development vault
+tests/test_vault/

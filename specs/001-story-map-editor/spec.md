@@ -50,6 +50,9 @@ visible. Delivers value as a read-only map viewer.
    map rather than showing an error.
 4. **Given** a card whose text contains an internal link to another note, **When** the map is
    displayed, **Then** the link is shown and remains usable to navigate to that note.
+5. **Given** a story-map file open as a board, **When** the user invokes the toggle to switch
+   between board and raw Markdown, **Then** the same file is shown in the raw Markdown editor and
+   can be switched back to the board, with no conversion of the file and no loss of content.
 
 ---
 
@@ -218,6 +221,9 @@ the board and the Markdown file reflect the final structure and reopen identical
   (horizontal backbone and vertical release bands) so all content remains reachable.
 - **FR-015**: A map file authored through the plugin MUST be portable — openable and renderable
   identically in any vault or project without additional configuration.
+- **FR-023**: Users MUST be able to switch a story-map file between the visual board view and the
+  raw Markdown editor, without converting the file or losing content, so they can inspect or
+  hand-edit the underlying Markdown and return to the board.
 
 ### Key Entities
 

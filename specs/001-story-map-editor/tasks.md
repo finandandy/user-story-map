@@ -80,7 +80,7 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 - [X] T018 [US1] Implement board rendering in `src/view/board.ts`: vanilla-DOM backbone (activities left→right with Roman labels), release bands (titles + subtitles, `R{n}`), and the activity×release card grid in document order, using `styles.css` classes (FR-001/FR-002/FR-014).
 - [X] T019 [US1] Implement card element in `src/view/card.ts`: render card title (and `{n}`) via Obsidian `MarkdownRenderer` so internal links render and stay navigable; open/show card body detail on click (FR-010/FR-017).
 - [X] T020 [US1] Render diagnostics in the view (e.g. a banner/inline markers for undeclared-release groups and duplicate release names) so malformed maps surface what wasn't understood instead of failing (FR-012).
-- [X] T021 [US1] Wire `src/main.ts`: `registerView` for the story-map view type, frontmatter-based detection to open matching files as a board, a "Toggle Markdown / board view" menu item, and clean unregister on `onunload` (no leaked listeners/views) (plan.md, Constitution V).
+- [X] T021 [US1] Wire `src/main.ts`: `registerView` for the story-map view type, frontmatter-based detection to open matching files as a board, a "Toggle Markdown / board view" menu item that switches a file between the board and the raw Markdown editor without converting it or losing content (FR-023), and clean unregister on `onunload` (no leaked listeners/views) (plan.md, Constitution V).
 
 **Checkpoint**: `the-knight.md` opens as a read-only board with correct hierarchy, numbering, and navigable links; core read-path checks (T009, T011–T013, T016) green. MVP is demoable.
 
