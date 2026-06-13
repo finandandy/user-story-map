@@ -33,13 +33,13 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 **Purpose**: Project scaffolding, build, and test tooling so any subsequent code can compile, bundle, and run.
 
-- [ ] T001 Create the plugin source tree per plan.md: empty directories `src/core/`, `src/view/`, `tests/core/` at the repo root (`fixtures/` already exists with `the-knight.md`).
-- [ ] T002 Create `package.json` at repo root with scripts (`build`, `dev`, `test`) and devDependencies: `typescript@5.x`, `esbuild`, `vitest`, `obsidian` (types), `@types/node`, `builtin-modules`.
-- [ ] T003 [P] Create `tsconfig.json` at repo root targeting ES2018 CommonJS, `strict: true`, `moduleResolution: node`, including `src/` and `tests/`.
-- [ ] T004 [P] Create `esbuild.config.mjs` at repo root bundling `src/main.ts` → `main.js` (CJS, `obsidian` + node builtins external, ES2018, sourcemap in dev, minify in prod).
-- [ ] T005 [P] Create `vitest.config.ts` at repo root scoped to `tests/core/**` (node environment); ensure `src/core/` is resolvable from tests.
-- [ ] T006 [P] Create `manifest.json` and `versions.json` at repo root (id `user-story-map`, name "User Story Map", `minAppVersion`, `isDesktopOnly: false`) per plan.md.
-- [ ] T007 [P] Create `styles.css` at repo root with board layout classes (backbone, release bands, card grid) using Obsidian theme CSS variables only (no hardcoded colors), derived from `template_user_story_map.html`.
+- [X] T001 Create the plugin source tree per plan.md: empty directories `src/core/`, `src/view/`, `tests/core/` at the repo root (`fixtures/` already exists with `the-knight.md`).
+- [X] T002 Create `package.json` at repo root with scripts (`build`, `dev`, `test`) and devDependencies: `typescript@5.x`, `esbuild`, `vitest`, `obsidian` (types), `@types/node`, `builtin-modules`.
+- [X] T003 [P] Create `tsconfig.json` at repo root targeting ES2018 CommonJS, `strict: true`, `moduleResolution: node`, including `src/` and `tests/`.
+- [X] T004 [P] Create `esbuild.config.mjs` at repo root bundling `src/main.ts` → `main.js` (CJS, `obsidian` + node builtins external, ES2018, sourcemap in dev, minify in prod).
+- [X] T005 [P] Create `vitest.config.ts` at repo root scoped to `tests/core/**` (node environment); ensure `src/core/` is resolvable from tests.
+- [X] T006 [P] Create `manifest.json` and `versions.json` at repo root (id `user-story-map`, name "User Story Map", `minAppVersion`, `isDesktopOnly: false`) per plan.md.
+- [X] T007 [P] Create `styles.css` at repo root with board layout classes (backbone, release bands, card grid) using Obsidian theme CSS variables only (no hardcoded colors), derived from `template_user_story_map.html`.
 
 **Checkpoint**: `npm install` succeeds; `npm run build` and `npm test` run (no sources yet → empty/failing as expected).
 
@@ -51,9 +51,9 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T008 [US-shared] Define core types in `src/core/model.ts`: `StoryMap`, `Release`, `Activity`, `Card`, `Diagnostic` interfaces exactly per contracts/core-api.md §Types (imports nothing from `obsidian`).
-- [ ] T009 [P] Write `tests/core/numbering.test.ts`: assert `strip*(format*(i) + " " + t) === t` for each element type, Roman formatting (1→"I.", 4→"IV."), per-cell card restart, tolerant strip of missing/odd prefixes (FR-020/FR-022). Tests are written first and fail until T010 lands.
-- [ ] T010 [P] Implement pure numbering helpers in `src/core/numbering.ts`: `formatActivityNumber`/`stripActivityNumber` (Roman), `formatReleaseNumber`/`stripReleaseNumber` (`R{n}.`), `formatCardNumber`/`stripCardNumber` (`{n}.`, tolerating decimal) per contracts/markdown-format.md §7. No `obsidian`, no I/O. Make T009 pass.
+- [X] T008 [US-shared] Define core types in `src/core/model.ts`: `StoryMap`, `Release`, `Activity`, `Card`, `Diagnostic` interfaces exactly per contracts/core-api.md §Types (imports nothing from `obsidian`).
+- [X] T009 [P] Write `tests/core/numbering.test.ts`: assert `strip*(format*(i) + " " + t) === t` for each element type, Roman formatting (1→"I.", 4→"IV."), per-cell card restart, tolerant strip of missing/odd prefixes (FR-020/FR-022). Tests are written first and fail until T010 lands.
+- [X] T010 [P] Implement pure numbering helpers in `src/core/numbering.ts`: `formatActivityNumber`/`stripActivityNumber` (Roman), `formatReleaseNumber`/`stripReleaseNumber` (`R{n}.`), `formatCardNumber`/`stripCardNumber` (`{n}.`, tolerating decimal) per contracts/markdown-format.md §7. No `obsidian`, no I/O. Make T009 pass.
 
 **Checkpoint**: Core types compile; `numbering.test.ts` passes. Parser/serializer can now be built on these.
 
@@ -67,20 +67,20 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 ### Tests for User Story 1 (core) ⚠️ write before implementation
 
-- [ ] T011 [P] [US1] Write `tests/core/detect.test.ts`: `isStoryMap` true with `story-map: true`, false when absent/markerless, edge frontmatter (FR-011 trigger).
-- [ ] T012 [P] [US1] Write `tests/core/parser.test.ts`: structure extraction (releases, activities, cells), document order → `order`, card body capture verbatim, prefix stripping to clean identity, release-by-name resolution, diagnostics for undeclared-release `###` and duplicate release titles, never throws (FR-002/FR-012/FR-016/FR-018/FR-020).
-- [ ] T013 [P] [US1] Write `tests/core/roundtrip.test.ts` read path: `serialize(parse(fixtures/the-knight.md)) === fixtures/the-knight.md` byte-for-byte (FR-006/FR-022). (Depends on serializer T015; may initially fail.)
+- [X] T011 [P] [US1] Write `tests/core/detect.test.ts`: `isStoryMap` true with `story-map: true`, false when absent/markerless, edge frontmatter (FR-011 trigger).
+- [X] T012 [P] [US1] Write `tests/core/parser.test.ts`: structure extraction (releases, activities, cells), document order → `order`, card body capture verbatim, prefix stripping to clean identity, release-by-name resolution, diagnostics for undeclared-release `###` and duplicate release titles, never throws (FR-002/FR-012/FR-016/FR-018/FR-020).
+- [X] T013 [P] [US1] Write `tests/core/roundtrip.test.ts` read path: `serialize(parse(fixtures/the-knight.md)) === fixtures/the-knight.md` byte-for-byte (FR-006/FR-022). (Depends on serializer T015; may initially fail.)
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Implement `parse(markdown): StoryMap` in `src/core/parser.ts`: capture `frontmatter`/`preamble`/`trailing` and card bodies verbatim, parse `# Releases` + `# Activities`, resolve cards to releases by name, assign `order`, strip auto-number prefixes via `numbering.ts`, emit diagnostics, never throw (contracts/core-api.md `parse`).
-- [ ] T015 [US1] Implement `serialize(map): string` in `src/core/serializer.ts`: emit `# Releases` then `# Activities` in `order`, write auto-number prefixes from position via `numbering.ts`, reproduce preserved segments + card bodies exactly, canonical single-blank-line spacing (contracts/markdown-format.md §4). Make T013 round-trip pass.
-- [ ] T016 [P] [US1] Implement `isStoryMap(markdown): boolean` in `src/core/detect.ts` (frontmatter `story-map: true` check). Make T011 pass.
-- [ ] T017 [US1] Implement `StoryMapView` in `src/view/StoryMapView.ts`: `TextFileView` subclass with `getViewData`/`setViewData`/`clear`, calls `parse` on load and `serialize` on save, holds the working `StoryMap`, renders empty state when releases+activities are empty (FR-011). External-change handling (FR-013): when `setViewData` fires for an external modification, re-`parse` into a fresh model and re-render; never write a stale in-memory model over newer on-disk content (only `requestSave()` after a user-initiated mutation).
-- [ ] T018 [US1] Implement board rendering in `src/view/board.ts`: vanilla-DOM backbone (activities left→right with Roman labels), release bands (titles + subtitles, `R{n}`), and the activity×release card grid in document order, using `styles.css` classes (FR-001/FR-002/FR-014).
-- [ ] T019 [US1] Implement card element in `src/view/card.ts`: render card title (and `{n}`) via Obsidian `MarkdownRenderer` so internal links render and stay navigable; open/show card body detail on click (FR-010/FR-017).
-- [ ] T020 [US1] Render diagnostics in the view (e.g. a banner/inline markers for undeclared-release groups and duplicate release names) so malformed maps surface what wasn't understood instead of failing (FR-012).
-- [ ] T021 [US1] Wire `src/main.ts`: `registerView` for the story-map view type, frontmatter-based detection to open matching files as a board, a "Toggle Markdown / board view" menu item, and clean unregister on `onunload` (no leaked listeners/views) (plan.md, Constitution V).
+- [X] T014 [US1] Implement `parse(markdown): StoryMap` in `src/core/parser.ts`: capture `frontmatter`/`preamble`/`trailing` and card bodies verbatim, parse `# Releases` + `# Activities`, resolve cards to releases by name, assign `order`, strip auto-number prefixes via `numbering.ts`, emit diagnostics, never throw (contracts/core-api.md `parse`).
+- [X] T015 [US1] Implement `serialize(map): string` in `src/core/serializer.ts`: emit `# Releases` then `# Activities` in `order`, write auto-number prefixes from position via `numbering.ts`, reproduce preserved segments + card bodies exactly, canonical single-blank-line spacing (contracts/markdown-format.md §4). Make T013 round-trip pass.
+- [X] T016 [P] [US1] Implement `isStoryMap(markdown): boolean` in `src/core/detect.ts` (frontmatter `story-map: true` check). Make T011 pass.
+- [X] T017 [US1] Implement `StoryMapView` in `src/view/StoryMapView.ts`: `TextFileView` subclass with `getViewData`/`setViewData`/`clear`, calls `parse` on load and `serialize` on save, holds the working `StoryMap`, renders empty state when releases+activities are empty (FR-011). External-change handling (FR-013): when `setViewData` fires for an external modification, re-`parse` into a fresh model and re-render; never write a stale in-memory model over newer on-disk content (only `requestSave()` after a user-initiated mutation).
+- [X] T018 [US1] Implement board rendering in `src/view/board.ts`: vanilla-DOM backbone (activities left→right with Roman labels), release bands (titles + subtitles, `R{n}`), and the activity×release card grid in document order, using `styles.css` classes (FR-001/FR-002/FR-014).
+- [X] T019 [US1] Implement card element in `src/view/card.ts`: render card title (and `{n}`) via Obsidian `MarkdownRenderer` so internal links render and stay navigable; open/show card body detail on click (FR-010/FR-017).
+- [X] T020 [US1] Render diagnostics in the view (e.g. a banner/inline markers for undeclared-release groups and duplicate release names) so malformed maps surface what wasn't understood instead of failing (FR-012).
+- [X] T021 [US1] Wire `src/main.ts`: `registerView` for the story-map view type, frontmatter-based detection to open matching files as a board, a "Toggle Markdown / board view" menu item, and clean unregister on `onunload` (no leaked listeners/views) (plan.md, Constitution V).
 
 **Checkpoint**: `the-knight.md` opens as a read-only board with correct hierarchy, numbering, and navigable links; core read-path checks (T009, T011–T013, T016) green. MVP is demoable.
 

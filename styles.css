@@ -1,0 +1,148 @@
+/*
+ * User Story Map — board styling.
+ * Derived from template_user_story_map.html, but using ONLY Obsidian theme
+ * CSS variables (no hardcoded colors) so the board respects the active theme
+ * including dark/custom themes (research.md R8, FR — theme-aware).
+ */
+
+.usm-view {
+  height: 100%;
+  overflow: auto;
+}
+
+.smap {
+  padding: 0.5rem;
+}
+
+/* Empty / initialize state (FR-011) */
+.usm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Diagnostics banner (FR-012) */
+.usm-diagnostics {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-m);
+  background: var(--background-modifier-error);
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}
+
+.usm-diagnostics ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+/* Backbone — activities run left to right (FR-001) */
+.backbone {
+  display: grid;
+  grid-auto-columns: minmax(140px, 1fr);
+  grid-auto-flow: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.act {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.act .usm-act-num {
+  display: block;
+  font-size: var(--font-smallest);
+  font-weight: var(--font-medium);
+  color: var(--text-accent);
+  margin-bottom: 2px;
+}
+
+.act .usm-act-title {
+  display: block;
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+  color: var(--text-normal);
+  line-height: 1.25;
+}
+
+/* Release band header */
+.band-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 8px;
+  padding: 6px 10px;
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+}
+
+.band-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  font-size: var(--font-smallest);
+  font-weight: var(--font-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.band-title {
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+  color: var(--text-normal);
+}
+
+.band-sub {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+/* Card grid — activity × release cells, aligned with the backbone */
+.grid {
+  display: grid;
+  grid-auto-columns: minmax(140px, 1fr);
+  grid-auto-flow: column;
+  gap: 8px;
+  align-items: start;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 7px 8px;
+  font-size: var(--font-ui-small);
+  line-height: 1.3;
+  color: var(--text-normal);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.card:hover {
+  border-color: var(--background-modifier-border-hover);
+  background: var(--background-secondary);
+}
+
+.card .usm-card-num {
+  color: var(--text-muted);
+  margin-right: 4px;
+}
