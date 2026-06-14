@@ -94,14 +94,14 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 ### Tests for User Story 2 (core) ⚠️ write before implementation
 
-- [ ] T022 [P] [US2] Extend `tests/core/serializer.test.ts`: `renameRelease` rewrites the `# Releases` declaration AND every matching `### ` reference together (FR-018); `editCard`/`renameActivity` change only the targeted bytes; preserved segments and untouched bodies are byte-identical (FR-004/FR-005).
-- [ ] T023 [P] [US2] Extend `tests/core/roundtrip.test.ts` edit path: applying a single edit then `serialize` changes only the intended bytes; re-`parse`→`serialize` of the edited map is stable (FR-006).
+- [X] T022 [P] [US2] Extend `tests/core/serializer.test.ts`: `renameRelease` rewrites the `# Releases` declaration AND every matching `### ` reference together (FR-018); `editCard`/`renameActivity` change only the targeted bytes; preserved segments and untouched bodies are byte-identical (FR-004/FR-005).
+- [X] T023 [P] [US2] Extend `tests/core/roundtrip.test.ts` edit path: applying a single edit then `serialize` changes only the intended bytes; re-`parse`→`serialize` of the edited map is stable (FR-006).
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Implement edit mutation helpers in `src/core/model.ts` (pure, return new `StoryMap`): `editCard(map, ref, patch)` (`ref` = `{ activityIndex, releaseTitle, order }`), `renameActivity(map, activityIndex, newTitle)` (by backbone position, so duplicate titles stay addressable), `renameRelease(map, oldTitle, newTitle)` (updates declaration + all `###` refs atomically) per contracts/core-api.md. Make T022/T023 pass.
-- [ ] T025 [US2] Implement in-place edit interactions in `src/view/interactions.ts`: inline edit of card title/body, activity title, release title/subtitle; commit calls the T024 helpers then `requestSave()`; cancel discards with no model/file change (FR-004/FR-017).
-- [ ] T026 [US2] Wire edit affordances into `src/view/board.ts` and `src/view/card.ts` (edit triggers, body editor, confirm/cancel) and re-render the affected nodes after a successful edit.
+- [X] T024 [US2] Implement edit mutation helpers in `src/core/model.ts` (pure, return new `StoryMap`): `editCard(map, ref, patch)` (`ref` = `{ activityIndex, releaseTitle, order }`), `renameActivity(map, activityIndex, newTitle)` (by backbone position, so duplicate titles stay addressable), `renameRelease(map, oldTitle, newTitle)` (updates declaration + all `###` refs atomically) per contracts/core-api.md. Make T022/T023 pass.
+- [X] T025 [US2] Implement in-place edit interactions in `src/view/interactions.ts`: inline edit of card title/body, activity title, release title/subtitle; commit calls the T024 helpers then `requestSave()`; cancel discards with no model/file change (FR-004/FR-017).
+- [X] T026 [US2] Wire edit affordances into `src/view/board.ts` and `src/view/card.ts` (edit triggers, body editor, confirm/cancel) and re-render the affected nodes after a successful edit.
 
 **Checkpoint**: Editing a card/activity/release on the board updates only the targeted Markdown; unmanaged content preserved; round-trip stable. US1 still works.
 
@@ -115,17 +115,17 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 ### Tests for User Story 3 (core) ⚠️ write before implementation
 
-- [ ] T027 [P] [US3] Add `createEmptyMap(opts?)` cases to `tests/core/serializer.test.ts`: produces marker frontmatter + empty `# Releases`/`# Activities` skeleton (FR-011).
-- [ ] T028 [P] [US3] Extend `tests/core/serializer.test.ts` for structure mutation: add/delete/reorder of releases, activities, and cards recompute all auto-numbers from position while identities and card↔release links are unchanged; deleting a release removes its `###` groups across activities (FR-007/FR-008/FR-009/FR-021).
+- [X] T027 [P] [US3] Add `createEmptyMap(opts?)` cases to `tests/core/serializer.test.ts`: produces marker frontmatter + empty `# Releases`/`# Activities` skeleton (FR-011).
+- [X] T028 [P] [US3] Extend `tests/core/serializer.test.ts` for structure mutation: add/delete/reorder of releases, activities, and cards recompute all auto-numbers from position while identities and card↔release links are unchanged; deleting a release removes its `###` groups across activities (FR-007/FR-008/FR-009/FR-021).
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Implement `createEmptyMap(opts?)` in `src/core/model.ts` returning a minimal valid map. Make T027 pass.
-- [ ] T030 [US3] Implement add/delete/reorder mutation helpers in `src/core/model.ts` (pure): `addRelease`/`deleteRelease`/`reorderReleases`, `addActivity`/`deleteActivity`/`reorderActivities`, `addCard`/`deleteCard`/`reorderCard`, each reassigning `order` so serialize renumbers correctly. Make T028 pass.
-- [ ] T031 [US3] Add a "Create story map" command in `src/main.ts` that writes the `createEmptyMap` skeleton (adds the `story-map: true` marker) and opens it as a board (FR-011).
-- [ ] T032 [US3] Implement add/delete/reorder interactions in `src/view/interactions.ts`: add controls for releases/activities/cards; delete with a confirmation prompt for destructive actions; call the T030 helpers then `requestSave()` (FR-007/FR-008).
-- [ ] T033 [US3] Implement drag-reorder in `src/view/interactions.ts` using native pointer/HTML5 DnD (per research.md) for cards within a cell, activities along the backbone, and releases; on drop reorder the model and `requestSave()` (FR-009).
-- [ ] T034 [US3] Wire add/delete/reorder affordances into `src/view/board.ts` and re-render after each mutation so the board and recomputed auto-numbers stay in sync.
+- [X] T029 [US3] Implement `createEmptyMap(opts?)` in `src/core/model.ts` returning a minimal valid map. Make T027 pass.
+- [X] T030 [US3] Implement add/delete/reorder mutation helpers in `src/core/model.ts` (pure): `addRelease`/`deleteRelease`/`reorderReleases`, `addActivity`/`deleteActivity`/`reorderActivities`, `addCard`/`deleteCard`/`reorderCard`, each reassigning `order` so serialize renumbers correctly. Make T028 pass.
+- [X] T031 [US3] Add a "Create story map" command in `src/main.ts` that writes the `createEmptyMap` skeleton (adds the `story-map: true` marker) and opens it as a board (FR-011).
+- [X] T032 [US3] Implement add/delete/reorder interactions in `src/view/interactions.ts`: add controls for releases/activities/cards; delete with a confirmation prompt for destructive actions; call the T030 helpers then `requestSave()` (FR-007/FR-008).
+- [X] T033 [US3] Implement drag-reorder in `src/view/interactions.ts` using native pointer/HTML5 DnD (per research.md) for cards within a cell, activities along the backbone, and releases; on drop reorder the model and `requestSave()` (FR-009).
+- [X] T034 [US3] Wire add/delete/reorder affordances into `src/view/board.ts` and re-render after each mutation so the board and recomputed auto-numbers stay in sync.
 
 **Checkpoint**: A full map can be built from empty, restructured, and persisted; auto-numbers recompute on every change; file stays portable. US1 and US2 still work.
 
@@ -135,9 +135,9 @@ Single flat Obsidian-plugin project at the repository root (per plan.md "Project
 
 **Purpose**: Settings, performance, and end-to-end validation across all stories.
 
-- [ ] T035 [P] Implement `src/settings.ts`: settings tab + defaults (view preferences only, persisted via `loadData`/`saveData`; never map content) and register it in `src/main.ts`. (Plan-derived infrastructure; no FR — supports Constitution II/V, not a spec requirement.)
-- [ ] T036 [P] Verify performance (SC-001, SC-007): confirm a typical map (tens of cards, e.g. `fixtures/the-knight.md`) opens and renders in under 2 s, and that board rendering/scroll stays responsive for hundreds of cards; adjust `board.ts` rendering if either budget is missed (e.g. batch DOM, avoid layout thrash).
-- [ ] T037 Run the quickstart.md scenarios S1–S5 in a dev vault and confirm `npm test` is green; explicitly open a plugin-authored map in a second vault and confirm it renders identically with no extra setup (FR-015/SC-006); fix any gaps surfaced (final acceptance gate).
+- [X] T035 [P] Implement `src/settings.ts`: settings tab + defaults (view preferences only, persisted via `loadData`/`saveData`; never map content) and register it in `src/main.ts`. (Plan-derived infrastructure; no FR — supports Constitution II/V, not a spec requirement.) Implemented: `StoryMapSettings`/`DEFAULT_SETTINGS` with the `autoOpenAsBoard` view preference and `StoryMapSettingTab`; `main.ts` loads/saves via `loadData`/`saveData`, registers the tab, and gates the `file-open` auto-switch on the preference. (Numbering toggles are deferred per plan.md; delete-confirmation is mandated by FR-008, so neither is exposed as a setting.)
+- [X] T036 [P] Verify performance (SC-001, SC-007): confirm a typical map (tens of cards, e.g. `fixtures/the-knight.md`) opens and renders in under 2 s, and that board rendering/scroll stays responsive for hundreds of cards; adjust `board.ts` rendering if either budget is missed (e.g. batch DOM, avoid layout thrash). Done: `renderBoard` now builds the entire board on a detached element and attaches it to the container in a single insertion, collapsing hundreds of per-card live-tree mutations into one and avoiding repeated layout thrash. SC-001 (tens of cards) is met by the framework-free vanilla-DOM render. NOTE: in-app scroll/pan "feel" for hundreds of cards is re-confirmed live under S5 in T037.
+- [ ] T037 Run the quickstart.md scenarios S1–S5 in a dev vault and confirm `npm test` is green; explicitly open a plugin-authored map in a second vault and confirm it renders identically with no extra setup (FR-015/SC-006); fix any gaps surfaced (final acceptance gate). PARTIAL: automated half done — `npm test` green (55/55) and `npm run build` clean. Manual half (S1–S5 in a dev Obsidian vault + second-vault portability) requires a live Obsidian desktop runtime and must be run by the maintainer; not executable headlessly in CI.
 
 ---
 

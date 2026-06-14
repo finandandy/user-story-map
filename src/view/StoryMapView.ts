@@ -10,10 +10,12 @@
  */
 
 import { TextFileView, WorkspaceLeaf } from "obsidian";
+import type StoryMapPlugin from "../main";
 import { StoryMap } from "../core/model";
 import { parse } from "../core/parser";
 import { serialize } from "../core/serializer";
 import { renderBoard } from "./board";
+import { EditContext } from "./interactions";
 
 export const VIEW_TYPE_STORY_MAP = "user-story-map-view";
 
@@ -21,8 +23,31 @@ export class StoryMapView extends TextFileView {
   /** Working model; null until the first `setViewData`. */
   map: StoryMap | null = null;
 
-  constructor(leaf: WorkspaceLeaf) {
+  /**
+   * Edit entry point handed to the board (US2): a user-initiated mutation
+   * applies a pure core helper, persists, and re-renders. Only here do we call
+   * `requestSave()` — never on external loads (FR-013).
+   */
+  private editCtx: EditContext = {
+    app: this.app,
+    apply: (mutate) => {
+      if (!this.map) return;
+      this.map = mutate(this.map);
+      this.requestSave();
+      this.render();
+    },
+  };
+
+  constructor(
+    leaf: WorkspaceLeaf,
+    private plugin: StoryMapPlugin,
+  ) {
     super(leaf);
+    // Discoverable toggle from the board side (FR-023): a header action that
+    // drops back to the raw Markdown editor for this file.
+    this.addAction("file-text", "Open as Markdown", () =>
+      void this.plugin.setMarkdownView(this.leaf),
+    );
   }
 
   getViewType(): string {
@@ -63,6 +88,7 @@ export class StoryMapView extends TextFileView {
       app: this.app,
       component: this,
       sourcePath: this.file ? this.file.path : "",
+      edit: this.editCtx,
     });
   }
 }

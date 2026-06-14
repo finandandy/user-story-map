@@ -116,6 +116,7 @@ addCard(map, activityIndex, releaseTitle, title, body?): StoryMap
 editCard(map, ref, patch: { title?: string; body?: string }): StoryMap
 deleteCard(map, ref): StoryMap
 reorderCard(map, ref, toIndex): StoryMap                  // within its activity×release cell
+moveCard(map, ref, dest: { activityIndex; releaseTitle; order }): StoryMap  // to any cell; re-links + renumbers both cells, drops emptied source
 ```
 
 `ref` identifies a card by `{ activityIndex, releaseTitle, order }`.

@@ -146,3 +146,162 @@
   color: var(--text-muted);
   margin-right: 4px;
 }
+
+.card {
+  position: relative;
+}
+
+/* In-place edit affordances (US2 / FR-004) */
+.usm-edit-btn {
+  opacity: 0;
+  margin-left: 4px;
+  padding: 0 4px;
+  border: none;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.12s, color 0.12s;
+}
+
+.act:hover .usm-edit-btn,
+.band-head:hover .usm-edit-btn,
+.card:hover .usm-edit-btn,
+.usm-edit-btn:focus-visible {
+  opacity: 0.7;
+}
+
+.usm-edit-btn:hover {
+  opacity: 1;
+  color: var(--text-accent);
+}
+
+/* Empty subtitle slot stays clickable so a subtitle can be added */
+.band-sub.usm-sub-empty {
+  min-width: 1em;
+}
+
+/* Inline text editor (replaces the label being edited) */
+.usm-edit-input {
+  font: inherit;
+  color: var(--text-normal);
+  background: var(--background-primary);
+  border: 1px solid var(--interactive-accent);
+  border-radius: var(--radius-s);
+  padding: 1px 4px;
+}
+
+/* Card detail editor (modal) */
+.usm-edit-textarea {
+  width: 100%;
+  min-height: 8em;
+  margin-top: 8px;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: 6px 8px;
+  resize: vertical;
+}
+
+.usm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Build controls — add activity / release / card (US3 / FR-007) */
+.usm-controls {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.usm-add-btn {
+  padding: 2px 8px;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.usm-add-btn:hover {
+  color: var(--text-accent);
+  border-color: var(--interactive-accent);
+  background: var(--background-secondary);
+}
+
+/* Per-cell "+ card" control stays subtle until the cell is hovered */
+.cell > .usm-add-btn {
+  opacity: 0;
+  align-self: stretch;
+}
+
+.cell:hover > .usm-add-btn,
+.cell > .usm-add-btn:focus-visible {
+  opacity: 1;
+}
+
+/* Delete (✕) affordance — hover-revealed, like the edit button (FR-008) */
+.usm-del-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  opacity: 0;
+  padding: 0 4px;
+  border: none;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.12s, color 0.12s;
+}
+
+.act,
+.band-head {
+  position: relative;
+}
+
+.act:hover .usm-del-btn,
+.band-head:hover .usm-del-btn,
+.card:hover .usm-del-btn,
+.usm-del-btn:focus-visible {
+  opacity: 0.7;
+}
+
+.usm-del-btn:hover {
+  opacity: 1;
+  color: var(--text-error);
+}
+
+/* Drag-and-drop reorder feedback (US3 / FR-009, research R6) */
+.usm-dragging {
+  opacity: 0.5;
+}
+
+.usm-drop-target {
+  outline: 2px dashed var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+/* Cells stay a comfortable drop zone (so cards can be dropped into empty cells) */
+.usm-view .cell {
+  min-height: 28px;
+  border-radius: var(--radius-s);
+}
+
+.usm-cell-drop {
+  background: var(--background-modifier-hover);
+  outline: 2px dashed var(--interactive-accent);
+  outline-offset: -2px;
+}
