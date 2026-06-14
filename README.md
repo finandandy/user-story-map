@@ -94,3 +94,7 @@ Stack: TypeScript bundled with esbuild to a single `main.js`; Vitest for the cor
 ## Status
 
 v0.1. Built and validated against the quickstart scenarios in a live vault. Spec, plan, and design artifacts live under [`specs/001-story-map-editor/`](specs/001-story-map-editor/).
+
+## License
+
+[MIT](LICENSE) © finandandy
