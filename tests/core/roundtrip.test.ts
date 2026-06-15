@@ -3,7 +3,12 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { parse } from "../../src/core/parser";
 import { serialize } from "../../src/core/serializer";
-import { editCard, renameActivity, renameRelease } from "../../src/core/model";
+import {
+  editCard,
+  renameActivity,
+  renameRelease,
+  setActivityIcon,
+} from "../../src/core/model";
 
 const FIXTURE = readFileSync(
   fileURLToPath(new URL("../../fixtures/the-knight.md", import.meta.url)),
@@ -27,6 +32,23 @@ describe("round-trip read path (FR-006/FR-022)", () => {
     expect(out).toContain("## I. Enter & orient");
     expect(out).toContain("### R2. Core loop");
     expect(out).toContain("#### 2. See the goal");
+  });
+
+  it("round-trips an activity icon + activity body byte-for-byte (US5 / F20)", () => {
+    // The fixture carries `icon: compass` on activity I and a body on activity II.
+    const map = parse(FIXTURE);
+    expect(map.activities[0].icon).toEqual({ type: "lucide", name: "compass" });
+    expect(map.activities[1].body).toBe(
+      "Movement and traversal are the heart of this activity.",
+    );
+    expect(serialize(map)).toBe(FIXTURE);
+  });
+
+  it("round-trips a custom-svg icon added to an activity", () => {
+    const svg = '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>';
+    const map = setActivityIcon(parse(FIXTURE), 2, { type: "custom-svg", svg });
+    const once = serialize(map);
+    expect(serialize(parse(once))).toBe(once);
   });
 });
 

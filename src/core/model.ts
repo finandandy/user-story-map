@@ -35,7 +35,24 @@ export interface Activity {
   order: number;
   /** Release-band cells keyed by release title; insertion order is incidental. */
   cells: Map<string, Card[]>;
+  /**
+   * Raw content between the `##` heading and the first `###` group, with the
+   * leading `icon:` line removed — preserved verbatim (FR-021, markdown §8 F17).
+   * Empty string when the activity has no body.
+   */
+  body: string;
+  /** Optional presentation marker, derived from a stripped `icon:` field (FR-016). */
+  icon: ActivityIcon | null;
 }
+
+/**
+ * An optional visual marker on an activity (markdown-format §8). Discriminated on
+ * read/write by a leading `<`: `icon: <svg …>` is a custom SVG, anything else a
+ * Lucide icon name. A custom SVG is sanitized before it is ever stored (FR-017).
+ */
+export type ActivityIcon =
+  | { type: "lucide"; name: string }
+  | { type: "custom-svg"; svg: string };
 
 export interface Card {
   /** Clean identity (auto-number prefix stripped). */
@@ -92,7 +109,48 @@ function cloneActivity(activity: Activity): Activity {
       cards.map((c) => ({ ...c })),
     );
   }
-  return { title: activity.title, order: activity.order, cells };
+  return {
+    title: activity.title,
+    order: activity.order,
+    cells,
+    body: activity.body,
+    icon: activity.icon ? { ...activity.icon } : null,
+  };
+}
+
+/**
+ * Set (or, with `null`, clear) an activity's icon by backbone position — never by
+ * title, consistent with the addressing model. Pure; returns a new map and does
+ * NO sanitization (the view sanitizes a custom SVG before calling this, R15).
+ * Clearing causes the serializer to omit the `icon:` line (no placeholder, FR-015).
+ */
+export function setActivityIcon(
+  map: StoryMap,
+  activityIndex: number,
+  icon: ActivityIcon | null,
+): StoryMap {
+  const next = cloneMap(map);
+  const activity = next.activities[activityIndex];
+  if (!activity) return next;
+  activity.icon = icon;
+  return next;
+}
+
+/**
+ * Pure, DOM-free backstop guard (FR-017/F18): `true` when an SVG string carries
+ * likely-active markup — a `<script>`/`<foreignObject>` element, an `on*=` event
+ * handler, or a `javascript:`/external `href`/`xlink:href`. The PRIMARY sanitizer
+ * is DOM-based and lives in `src/view/icon.ts`; this keeps unsafe markup out of
+ * the model even if a future caller skips the view path.
+ */
+export function isLikelyUnsafeSvg(svg: string): boolean {
+  const s = svg.toLowerCase();
+  if (/<\s*script[\s>/]/.test(s)) return true;
+  if (/<\s*foreignobject[\s>/]/.test(s)) return true;
+  if (/\son[a-z]+\s*=/.test(s)) return true;
+  if (/(?:xlink:href|href)\s*=\s*["']?\s*javascript:/.test(s)) return true;
+  if (/(?:xlink:href|href)\s*=\s*["']?\s*(?:https?:)?\/\//.test(s)) return true;
+  return false;
 }
 
 /**
@@ -281,6 +339,8 @@ export function addActivity(map: StoryMap, title: string): StoryMap {
     title,
     order: next.activities.length,
     cells: new Map<string, Card[]>(),
+    body: "",
+    icon: null,
   });
   reindexActivities(next);
   return next;

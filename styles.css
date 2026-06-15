@@ -8,10 +8,19 @@
 .usm-view {
   height: 100%;
   overflow: auto;
+  /* Shared card/column width + story-card height — session-only, set live by the
+     resize handles (US3, FR-022/FR-024). The view overrides these inline. */
+  --usm-card-width: 180px;
+  --usm-card-height: 68px;
 }
 
 .smap {
   padding: 0.5rem;
+  /* Shrink-wrap to the widest row — the grid of activity columns — so the
+     full-width release banner spans exactly the activity columns and no wider.
+     The view scrolls horizontally when the columns exceed the viewport. */
+  width: max-content;
+  min-width: min-content;
 }
 
 /* Empty / initialize state (FR-011) */
@@ -41,37 +50,61 @@
   padding-left: 18px;
 }
 
-/* Backbone — activities run left to right (FR-001) */
+/* Backbone — activities run left to right (FR-001). Every column is the shared
+   width so the backbone aligns with the bands below (US3, FR-010). */
 .backbone {
   display: grid;
-  grid-auto-columns: minmax(140px, 1fr);
+  grid-auto-columns: var(--usm-card-width);
   grid-auto-flow: column;
   gap: 8px;
   margin-bottom: 14px;
 }
 
 .act {
+  position: relative;
   background: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);
   border-radius: var(--radius-m);
   padding: 10px 8px;
   text-align: center;
+  max-width: var(--usm-card-width);
+  overflow-wrap: anywhere;
 }
 
-.act .usm-act-num {
-  display: block;
-  font-size: var(--font-smallest);
-  font-weight: var(--font-medium);
-  color: var(--text-accent);
-  margin-bottom: 2px;
-}
-
-.act .usm-act-title {
-  display: block;
+/* Inline auto-number + title, read as one continuous label (FR-004, SC-003). */
+.usm-card-label {
   font-size: var(--font-ui-small);
+  line-height: 1.3;
+}
+
+.usm-card-label .usm-num {
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.act .usm-card-label {
+  display: block;
   font-weight: var(--font-medium);
   color: var(--text-normal);
-  line-height: 1.25;
+}
+
+.act .usm-card-label .usm-num {
+  color: var(--text-accent);
+}
+
+/* Optional activity icon — sized to the inline label, no gap when absent. */
+.usm-act-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+  color: var(--text-accent);
+}
+
+.usm-act-icon svg,
+.usm-act-icon .svg-icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* Release band header */
@@ -85,18 +118,13 @@
   border-radius: var(--radius-m);
 }
 
-.band-num {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
-  font-size: var(--font-smallest);
+.band-head .usm-card-label {
   font-weight: var(--font-medium);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+}
+
+.usm-band-num {
+  color: var(--text-accent) !important;
+  font-weight: var(--font-medium);
 }
 
 .band-title {
@@ -110,10 +138,11 @@
   color: var(--text-muted);
 }
 
-/* Card grid — activity × release cells, aligned with the backbone */
+/* Card grid — activity × release cells, aligned with the backbone. Columns are
+   the shared width, so every column matches and content wraps within it (US3). */
 .grid {
   display: grid;
-  grid-auto-columns: minmax(140px, 1fr);
+  grid-auto-columns: var(--usm-card-width);
   grid-auto-flow: column;
   gap: 8px;
   align-items: start;
@@ -126,6 +155,8 @@
 }
 
 .card {
+  position: relative;
+  box-sizing: border-box;
   background: var(--background-primary);
   border: 1px solid var(--background-modifier-border);
   border-radius: var(--radius-m);
@@ -135,6 +166,18 @@
   color: var(--text-normal);
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
+  /* Long content wraps/contains within the shared width, never widening the
+     column (US3, FR-009). */
+  max-width: var(--usm-card-width);
+  overflow-wrap: anywhere;
+  /* All story cards share one height (US3): at least 3 rows of text, grown to
+     the tallest card by the view. Text is centered in the resulting box. */
+  min-height: var(--usm-card-height, 68px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .card:hover {
@@ -142,16 +185,14 @@
   background: var(--background-secondary);
 }
 
-.card .usm-card-num {
-  color: var(--text-muted);
-  margin-right: 4px;
+/* The title renders inline markdown; keep its wrapping <p> compact and inline. */
+.usm-card-label .usm-title p {
+  display: inline;
+  margin: 0;
 }
 
-.card {
-  position: relative;
-}
-
-/* In-place edit affordances (US2 / FR-004) */
+/* Inline edit affordance — the release title/subtitle pencils, which sit next to
+   their text (US2 / FR-004, research R13). */
 .usm-edit-btn {
   opacity: 0;
   margin-left: 4px;
@@ -166,9 +207,7 @@
   transition: opacity 0.12s, color 0.12s;
 }
 
-.act:hover .usm-edit-btn,
 .band-head:hover .usm-edit-btn,
-.card:hover .usm-edit-btn,
 .usm-edit-btn:focus-visible {
   opacity: 0.7;
 }
@@ -191,6 +230,21 @@
   border: 1px solid var(--interactive-accent);
   border-radius: var(--radius-s);
   padding: 1px 4px;
+}
+
+/* Multi-line card title editor — overlays and fills the whole card, so the
+   editing viewport scales with the card's (resizable) size. */
+textarea.usm-edit-overlay {
+  position: absolute;
+  inset: 3px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 4px 6px;
+  text-align: center;
+  resize: none;
+  overflow: auto;
+  z-index: 4;
 }
 
 /* Card detail editor (modal) */
@@ -250,21 +304,38 @@
   opacity: 1;
 }
 
-/* Delete (✕) affordance — hover-revealed, like the edit button (FR-008) */
+/* Corner action affordances — the edit (pencil) and delete (✕) buttons share one
+   small, round, right-aligned shape and sit side by side in the top-right corner;
+   both stay hidden until the node is hovered/focused (FR-008, SC-008). */
+.usm-action-btn,
 .usm-del-btn {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  opacity: 0;
-  padding: 0 4px;
-  border: none;
-  border-radius: var(--radius-s);
-  background: transparent;
+  top: 4px;
+  z-index: 3; /* above the border resize grip so a corner click still hits */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 50%;
+  background: var(--background-primary);
   color: var(--text-muted);
-  font-size: var(--font-ui-smaller);
+  font-size: 11px;
   line-height: 1;
   cursor: pointer;
-  transition: opacity 0.12s, color 0.12s;
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s, border-color 0.12s;
+}
+
+/* Delete rightmost; edit just to its left. */
+.usm-del-btn {
+  right: 4px;
+}
+
+.usm-action-btn {
+  right: 26px;
 }
 
 .act,
@@ -272,16 +343,29 @@
   position: relative;
 }
 
+.act:hover .usm-action-btn,
+.card:hover .usm-action-btn,
+.usm-action-btn:focus-visible {
+  opacity: 0.9;
+}
+
 .act:hover .usm-del-btn,
 .band-head:hover .usm-del-btn,
 .card:hover .usm-del-btn,
 .usm-del-btn:focus-visible {
-  opacity: 0.7;
+  opacity: 0.9;
+}
+
+.usm-action-btn:hover {
+  opacity: 1;
+  color: var(--text-accent);
+  border-color: var(--interactive-accent);
 }
 
 .usm-del-btn:hover {
   opacity: 1;
   color: var(--text-error);
+  border-color: var(--text-error);
 }
 
 /* Drag-and-drop reorder feedback (US3 / FR-009, research R6) */
@@ -304,4 +388,250 @@
   background: var(--background-modifier-hover);
   outline: 2px dashed var(--interactive-accent);
   outline-offset: -2px;
+}
+
+/* Single-click-to-edit hint on a node title (US1, FR-003) */
+.usm-editable {
+  cursor: text;
+  border-radius: var(--radius-s);
+}
+
+.usm-editable:hover {
+  background: var(--background-modifier-hover);
+}
+
+/* Border resize grips — shared-width (right border) and shared-height (bottom
+   border) drags (US3, FR-022/FR-023). The resize cursor appears ONLY on the
+   border (Edge Cases). Each grip stops short of the corner so the two never
+   overlap. */
+.usm-resize-handle {
+  position: absolute;
+  z-index: 2;
+}
+
+/* Width grip — right border, vertical. */
+.usm-resize-x {
+  top: 0;
+  right: -3px;
+  width: 8px;
+  height: calc(100% - 8px);
+  cursor: ew-resize;
+}
+
+/* Height grip — bottom border, horizontal (story cards only). */
+.usm-resize-y {
+  left: 0;
+  bottom: -3px;
+  height: 8px;
+  width: calc(100% - 8px);
+  cursor: ns-resize;
+}
+
+.usm-resize-handle::after {
+  content: "";
+  position: absolute;
+  border-radius: 1px;
+  background: transparent;
+  transition: background 0.12s;
+}
+
+.usm-resize-x::after {
+  top: 20%;
+  right: 3px;
+  width: 2px;
+  height: 60%;
+}
+
+.usm-resize-y::after {
+  left: 20%;
+  bottom: 3px;
+  height: 2px;
+  width: 60%;
+}
+
+.card:hover > .usm-resize-handle::after,
+.act:hover > .usm-resize-handle::after {
+  background: var(--background-modifier-border-hover);
+}
+
+/* US4: hover-revealed "+" add-activity card at the right end of the backbone.
+   Hidden at rest (no clutter, SC-008); the always-present top "+ Activity"
+   control keeps it reachable without hover (FR-012). */
+.usm-add-activity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-style: dashed;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.backbone:hover .usm-add-activity,
+.usm-add-activity:focus-visible {
+  opacity: 1;
+}
+
+.usm-add-activity:hover {
+  color: var(--text-accent);
+  border-color: var(--interactive-accent);
+}
+
+.usm-add-activity-glyph {
+  font-size: var(--font-ui-medium);
+  line-height: 1;
+}
+
+/* Focused edit modals (US2): field labels, two text fields, link preview */
+.usm-field-label {
+  display: block;
+  margin: 10px 0 4px;
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+.modal .usm-edit-input {
+  width: 100%;
+}
+
+.usm-card-preview {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  font-size: var(--font-ui-small);
+}
+
+/* US5: icon selector mounted in the activity modal */
+.usm-icon-slot {
+  margin-top: 4px;
+}
+
+.usm-icon-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.usm-icon-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-accent);
+}
+
+.usm-icon-preview svg,
+.usm-icon-preview .svg-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Category filter + search sit on one row above the icon grid (US5/FR-014). */
+.usm-icon-filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.usm-icon-category {
+  flex: 0 0 auto;
+  max-width: 45%;
+}
+
+.usm-icon-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.usm-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  /* Pack rows at the top so they don't stretch to fill a taller (resized) box. */
+  align-content: start;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: auto;
+  box-sizing: border-box;
+  /* User-resizable; a FIXED height (not content-driven) keeps the box steady
+     when switching categories — content scrolls instead of the box jumping.
+     Heights are tuned to whole rows: 1 (min) / 3 (default) / 5 (max), where a
+     row is a 40px tile + 4px gap, plus 4px padding + 1px border each side. */
+  resize: vertical;
+  min-height: 50px;
+  height: 138px;
+  max-height: 226px;
+}
+
+.usm-icon-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+  /* Render options in the accent (purple) at a clearly legible size so each
+     option previews how the icon will look on the board (FR-014). */
+  color: var(--text-accent);
+  cursor: pointer;
+}
+
+/* The board renders activity icons in the accent; preview them the same here. */
+.usm-icon-option svg,
+.usm-icon-option .svg-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.usm-icon-option:hover {
+  border-color: var(--interactive-accent);
+  background: var(--background-modifier-hover);
+}
+
+.usm-icon-count {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.usm-icon-empty {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.usm-icon-svg-label {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.usm-icon-svg-input {
+  width: 100%;
+  min-height: 4em;
+  margin-top: 4px;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-normal);
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: 6px 8px;
+  resize: vertical;
+}
+
+.usm-icon-svg-error {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-error);
+  font-size: var(--font-ui-smaller);
 }

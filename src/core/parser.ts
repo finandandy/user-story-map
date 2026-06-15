@@ -9,7 +9,15 @@
  * Pure — imports nothing from `obsidian`.
  */
 
-import { StoryMap, Release, Activity, Card, Diagnostic } from "./model";
+import {
+  StoryMap,
+  Release,
+  Activity,
+  ActivityIcon,
+  Card,
+  Diagnostic,
+  isLikelyUnsafeSvg,
+} from "./model";
 import {
   stripActivityNumber,
   stripReleaseNumber,
@@ -158,10 +166,22 @@ function parseActivities(
         title: stripActivityNumber(h2[1].trim()),
         order: activityOrder++,
         cells: new Map<string, Card[]>(),
+        body: "",
+        icon: null,
       };
       activities.push(activity);
       releaseKey = null;
       i++;
+      // Capture the activity body verbatim up to the first ###/next heading,
+      // then strip a leading `icon:` field into `Activity.icon` (markdown §8).
+      const bodyLines: string[] = [];
+      while (i < lines.length && !/^#{1,4} /.test(lines[i])) {
+        bodyLines.push(lines[i]);
+        i++;
+      }
+      const { icon, body } = extractActivityIcon(bodyLines);
+      activity.icon = icon;
+      activity.body = body;
       continue;
     }
 
@@ -224,4 +244,38 @@ function parseActivities(
   }
 
   return activities;
+}
+
+const ICON_LINE = /^icon:\s*(.+?)\s*$/;
+
+/**
+ * Split captured activity-body lines into an optional leading `icon:` field and
+ * the remaining verbatim body (markdown-format §8.5). The icon line is only
+ * recognized as the FIRST non-blank line; a value starting with `<` is a custom
+ * SVG (kept ONLY if it passes the pure unsafe-SVG guard — else `icon: null` and
+ * the line stays in the body, F18/F19), otherwise a Lucide name. The body is
+ * trimmed like card bodies so the canonical serializer round-trips it.
+ */
+function extractActivityIcon(bodyLines: string[]): {
+  icon: ActivityIcon | null;
+  body: string;
+} {
+  const firstNonBlank = bodyLines.findIndex((l) => l.trim().length > 0);
+  if (firstNonBlank !== -1) {
+    const m = bodyLines[firstNonBlank].match(ICON_LINE);
+    if (m) {
+      const value = m[1];
+      const icon: ActivityIcon | null = value.startsWith("<")
+        ? isLikelyUnsafeSvg(value)
+          ? null
+          : { type: "custom-svg", svg: value }
+        : { type: "lucide", name: value };
+      if (icon) {
+        const rest = bodyLines.slice();
+        rest.splice(firstNonBlank, 1);
+        return { icon, body: rest.join("\n").trim() };
+      }
+    }
+  }
+  return { icon: null, body: bodyLines.join("\n").trim() };
 }

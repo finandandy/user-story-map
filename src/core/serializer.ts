@@ -12,12 +12,17 @@
  * Pure — imports nothing from `obsidian`.
  */
 
-import { StoryMap } from "./model";
+import { StoryMap, ActivityIcon } from "./model";
 import {
   formatActivityNumber,
   formatReleaseNumber,
   formatCardNumber,
 } from "./numbering";
+
+/** A Lucide icon serializes to its name; a custom SVG to its (single-line) document. */
+function formatActivityIcon(icon: ActivityIcon): string {
+  return `icon: ${icon.type === "lucide" ? icon.name : icon.svg}`;
+}
 
 export function serialize(map: StoryMap): string {
   const blocks: string[] = [];
@@ -42,7 +47,14 @@ export function serialize(map: StoryMap): string {
 
   for (let a = 0; a < map.activities.length; a++) {
     const activity = map.activities[a];
-    blocks.push(`## ${formatActivityNumber(a + 1)} ${activity.title}`);
+    // The ## heading, an optional managed `icon:` line, and the preserved body
+    // form one block (markdown-format §8.4); release groups follow as their own.
+    let head = `## ${formatActivityNumber(a + 1)} ${activity.title}`;
+    if (activity.icon) head += `\n\n${formatActivityIcon(activity.icon)}`;
+    if (activity.body && activity.body.length > 0) {
+      head += `\n\n${activity.body}`;
+    }
+    blocks.push(head);
 
     for (const releaseTitle of orderedGroups(map, activity)) {
       const cards = activity.cells.get(releaseTitle) ?? [];

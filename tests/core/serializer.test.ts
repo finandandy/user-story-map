@@ -20,6 +20,7 @@ import {
   deleteCard,
   reorderCard,
   moveCard,
+  setActivityIcon,
 } from "../../src/core/model";
 
 const FIXTURE = readFileSync(
@@ -63,6 +64,47 @@ describe("renameRelease — declaration + all refs rewritten together (FR-018)",
     const before = serialize(map);
     renameRelease(map, "Core loop", "Core gameplay");
     expect(serialize(map)).toBe(before);
+  });
+});
+
+describe("serialize — activity icon + body emission (US5 / F16, FR-015/FR-016)", () => {
+  it("emits the `icon:` line after the ## heading and before the ### groups", () => {
+    const map = parse(FIXTURE);
+    const out = serialize(map);
+    expect(out).toContain(
+      "## I. Enter & orient\n\nicon: compass\n\n### R1. Walking skeleton",
+    );
+  });
+
+  it("emits a preserved activity body after the heading", () => {
+    const map = parse(FIXTURE);
+    const out = serialize(map);
+    expect(out).toContain(
+      "## II. Explore world\n\nMovement and traversal are the heart of this activity.\n\n### R1. Walking skeleton",
+    );
+  });
+
+  it("omits the `icon:` line entirely when the icon is cleared (no placeholder)", () => {
+    const map = parse(FIXTURE);
+    const out = serialize(setActivityIcon(map, 0, null));
+    expect(out).not.toContain("icon:");
+    expect(out).toContain("## I. Enter & orient\n\n### R1. Walking skeleton");
+  });
+
+  it("emits a newly-set icon in canonical shape", () => {
+    const map = parse(FIXTURE);
+    const out = serialize(setActivityIcon(map, 2, { type: "lucide", name: "swords" }));
+    expect(out).toContain("## III. Encounter\n\nicon: swords\n\n### R1. Walking skeleton");
+  });
+
+  it("emits icon then body when an activity has both", () => {
+    let map = parse(FIXTURE);
+    // Activity 1 already has a body; add an icon to it.
+    map = setActivityIcon(map, 1, { type: "lucide", name: "map" });
+    const out = serialize(map);
+    expect(out).toContain(
+      "## II. Explore world\n\nicon: map\n\nMovement and traversal are the heart of this activity.\n\n### R1. Walking skeleton",
+    );
   });
 });
 
