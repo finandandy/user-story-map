@@ -14,6 +14,8 @@ story-map: true
 
 ## I. Enter & orient
 
+icon: compass
+
 ### R1. Walking skeleton
 
 #### 1. Start the game
@@ -31,6 +33,8 @@ story-map: true
 #### 1. Session recap
 
 ## II. Explore world
+
+Movement and traversal are the heart of this activity.
 
 ### R1. Walking skeleton
 

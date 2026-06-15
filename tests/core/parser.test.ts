@@ -53,6 +53,52 @@ describe("parse — structure extraction (FR-002/FR-016)", () => {
   });
 });
 
+describe("parse — activity body + icon field (US5 / F16/F17/F19)", () => {
+  const map = parse(FIXTURE);
+
+  it("strips a leading `icon:` line into Activity.icon (lucide) and clears it from body", () => {
+    expect(map.activities[0].icon).toEqual({ type: "lucide", name: "compass" });
+    expect(map.activities[0].body).toBe("");
+  });
+
+  it("captures activity body verbatim when there is no icon", () => {
+    expect(map.activities[1].icon).toBeNull();
+    expect(map.activities[1].body).toBe(
+      "Movement and traversal are the heart of this activity.",
+    );
+  });
+
+  it("leaves body empty and icon null for plain activities", () => {
+    expect(map.activities[2].icon).toBeNull();
+    expect(map.activities[2].body).toBe("");
+  });
+
+  it("parses a custom-svg `icon:` value into a custom-svg icon", () => {
+    const svg = '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>';
+    const md =
+      `---\nstory-map: true\n---\n\n# Releases\n\n1. R\n\n# Activities\n\n## A\n\nicon: ${svg}\n\n### R\n\n#### 1. C\n`;
+    const m = parse(md);
+    expect(m.activities[0].icon).toEqual({ type: "custom-svg", svg });
+    expect(m.activities[0].body).toBe("");
+  });
+
+  it("leaves icon null and keeps the line for an unrecognized/unsafe value", () => {
+    const md =
+      "---\nstory-map: true\n---\n\n# Releases\n\n1. R\n\n# Activities\n\n## A\n\nicon: <svg onload=\"x()\"/>\n\n### R\n\n#### 1. C\n";
+    const m = parse(md);
+    expect(m.activities[0].icon).toBeNull();
+    expect(m.activities[0].body).toContain('icon: <svg onload="x()"/>');
+  });
+
+  it("does not treat a non-leading `icon:` line as an icon field", () => {
+    const md =
+      "---\nstory-map: true\n---\n\n# Releases\n\n1. R\n\n# Activities\n\n## A\n\nSome text first.\n\nicon: compass\n\n### R\n\n#### 1. C\n";
+    const m = parse(md);
+    expect(m.activities[0].icon).toBeNull();
+    expect(m.activities[0].body).toBe("Some text first.\n\nicon: compass");
+  });
+});
+
 describe("parse — tolerance and diagnostics (FR-012/FR-018/FR-020)", () => {
   it("never throws on malformed input and keeps content addressable", () => {
     const md =
